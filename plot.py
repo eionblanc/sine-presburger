@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from best_approximate import *
 
 def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
-                     vals=[], zones=[], filedir=None, filename=None):
+                     vals=[], zones=[], filedir=None, filename=None, filetype=None):
     fig,ax = plt.subplots(figsize=(15,4))
     if not deg2:
         deg2 = deg1
@@ -58,12 +58,14 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
     if not filedir:
         filedir = './plots/'
     if not filename:
-        filename = 'mesh-{}'.format(deg1) + ('-{}'.format(deg2) if deg2 != deg1 else '') + '.pdf'
+        if not filetype:
+            filetype = 'pdf'
+        filename = 'mesh-{}'.format(deg1) + ('-{}'.format(deg2) if deg2 != deg1 else '') + '.' + filetype
     fig.savefig(filedir+filename, bbox_inches='tight')
     return
 
 def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
-                     filedir=None, filename=None):
+                     filedir=None, filename=None, filetype=None):
     s1 = np.sin(x1)
     s2 = np.sin(x2)
     if s1 > s2:
@@ -124,6 +126,8 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     if not filedir:
         filedir = './plots/'
     if not filename:
-        filename = 'diffmesh-{}-{}.pdf'.format(x1,x2)
+        if not filetype:
+            filetype = 'pdf'
+        filename = 'diffmesh-{}-{}.'.format(x1,x2) + filetype
     fig.savefig(filedir+filename, bbox_inches='tight')
     return
