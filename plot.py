@@ -136,10 +136,10 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     return
 
 def level_sets(eps, cons, R, L_term, osc_Lsin_term,
-               xa=-5, xb=5, ya=-5, yb=10, flip=False,
+               xa=-5, xb=5, ya=-5, yb=10, flip=False, title=None,
                filedir=None, filetype=None, filename=None):
     # Initialize plot
-    fig,ax = plt.subplots(figsize=(6,5))
+    fig,ax = plt.subplots(figsize=(5,4))
     mpl.rcParams['lines.color'] = 'k'
     mpl.rcParams['axes.prop_cycle'] = mpl.cycler('color', ['k'])
     x = np.linspace(xa, xb, 10**3)
@@ -170,7 +170,11 @@ def level_sets(eps, cons, R, L_term, osc_Lsin_term,
     level_sets = mlines.Line2D([], [], color='tab:orange', linestyle='-',
                                markersize=10, label='level sets')
     plt.legend(handles=[osc_Lsin_term, feasible_region, level_sets],
-               loc='upper left', prop={'size': 12})
+               loc='upper left', prop={'size': 10})
+    if title:
+        plt.title(title)
+        plt.xlabel(r'$x_1$')
+        plt.ylabel(r'$x_2$')
     # Save figure
     if not filedir:
         filedir = './plots/'
