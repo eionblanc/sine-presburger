@@ -1,6 +1,9 @@
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 from best_approximate import *
+from decision import *
 
 def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
                      vals=[], zones=[], filedir=None, filename=None, filetype=None):
@@ -129,5 +132,51 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
         if not filetype:
             filetype = 'pdf'
         filename = 'diffmesh-{}-{}.'.format(x1,x2) + filetype
+    fig.savefig(filedir+filename, bbox_inches='tight')
+    return
+
+def level_sets(eps, cons, R, L_term, osc_Lsin_term,
+               xa=-5, xb=5, ya=-5, yb=10, flip=False,
+               filedir=None, filetype=None, filename=None):
+    # Initialize plot
+    fig,ax = plt.subplots(figsize=(6,5))
+    mpl.rcParams['lines.color'] = 'k'
+    mpl.rcParams['axes.prop_cycle'] = mpl.cycler('color', ['k'])
+    x = np.linspace(xa, xb, 10**3)
+    y = np.linspace(ya, yb, 10**3)
+    x, y = np.meshgrid(x, y)
+    plt.axhline(0, alpha=0.1)
+    plt.axvline(0, alpha=0.1)
+    
+    # Plot level sets
+    for val in lincombspace(eps, cons, R):
+        plt.contour(x, y, L_term(x,y), [val], colors='tab:orange', alpha=0.7, linestyles='-')
+    for val in [R, -R]:
+        plt.contour(x, y, L_term(x,y), [val], colors='tab:orange', alpha=1, linestyles='-')
+    # Plot inequality boundary
+    plt.contour(x, y, L_term(x,y) - osc_Lsin_term(x,y), [0], colors='mediumblue')
+    # Plot feasible set
+    if flip:
+        C = ['b', 'white']
+    else:
+        C = ['white', 'b']
+    plt.contourf(x, y, L_term(x,y) - osc_Lsin_term(x,y), 1, colors=C, alpha=0.1)
+
+    # Create legend
+    osc_Lsin_term = mlines.Line2D([], [], color='mediumblue', linestyle='-',
+                                  markersize=10, label=r'oscillatory $\mathcal{L}_{\sin}$-term')
+    feasible_region = mlines.Line2D([], [], color='b', marker='s', linestyle='None',
+                                    markersize=10, alpha=0.2, label='feasible region')
+    level_sets = mlines.Line2D([], [], color='tab:orange', linestyle='-',
+                               markersize=10, label='level sets')
+    plt.legend(handles=[osc_Lsin_term, feasible_region, level_sets],
+               loc='upper left', prop={'size': 12})
+    # Save figure
+    if not filedir:
+        filedir = './plots/'
+    if not filename:
+        if not filetype:
+            filetype = 'pdf'
+        filename = 'Lsin-inequality.' + filetype
     fig.savefig(filedir+filename, bbox_inches='tight')
     return

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from functools import reduce
 
 def gcd_rational(ab : tuple, cd : tuple) -> tuple:
@@ -27,6 +28,6 @@ def lincombspace(eps : float, c : float, R : float):
     :param c: constant value to include in linear combination
     :param R: radius of centered, bounded interval to restrict to
     """
-    l_k = int((-R - c) // eps) + 1
-    r_k = int((R - c) // eps)
+    l_k = int(math.ceil((-R - c) / eps))
+    r_k = int(math.floor((R - c) / eps))
     return (eps*k + c for k in range(l_k, r_k+1))

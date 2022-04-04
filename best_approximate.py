@@ -22,6 +22,7 @@ def approx(N, d):
     return A
     # Sleeker but slower
     #return np.argmax([np.sin(n) if np.sin(n) <= sine_true else -1 for n in range(d+1)])
+    
 
 def diff_approx(x1, x2, d, e):
     """
