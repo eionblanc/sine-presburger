@@ -194,7 +194,7 @@ def graph_level_sets(inequalities, xlim=(-10,10), ylim=(-10,10),
     return
 
 def project_level_sets(inequality, divisibilities, d, n,
-                       filedir=None, filename=None, filetype=None):
+                       title=None, filedir=None, filename=None, filetype=None):
     """
     Graph single L_sin-inequality with level sets and feasible region, incorporating
     divisibility predicates and projecting onto a single coordinate.
@@ -233,15 +233,15 @@ def project_level_sets(inequality, divisibilities, d, n,
     # Plot zone lines
     h = 1.
     ax.plot((Ia,Ia), (-h,h), 'tab:orange')
-    ax.annotate(str(Ia), (Ia,ah), horizontalalignment="right", verticalalignment="center")
+    ax.annotate(str(Ia), (Ia,ah), horizontalalignment="center", verticalalignment="center")
     ax.plot((-inequality['R'],-inequality['R']), (-h,h), 'mediumblue', linestyle='--')
-    xx = np.linspace(-inequality['R'], inequality['R'], 100)
-    ax.plot(xx, 0.1*np.sin(inequality['R']*np.pi*xx), 'mediumblue', linestyle='--')
+    #xx = np.linspace(-inequality['R'], inequality['R'], 100)
+    #ax.plot(xx, 0.1*np.sin(inequality['R']*np.pi*xx), 'mediumblue', linestyle='--')
     ax.annotate(str(-inequality['R']), (-inequality['R'],ah),
-                horizontalalignment="right", verticalalignment="center")
+                horizontalalignment="center", verticalalignment="center")
     ax.plot((inequality['R'],inequality['R']), (-h,h), 'green')
     ax.annotate(str(inequality['R']), (inequality['R'],ah),
-                horizontalalignment="left", verticalalignment="center")
+                horizontalalignment="center", verticalalignment="center")
     ax.annotate(r'$x_{n}$'.format(n=n), (1.125*inequality['R'],-0.125),
                 horizontalalignment="center", verticalalignment="center", fontsize=13)
     
@@ -255,6 +255,21 @@ def project_level_sets(inequality, divisibilities, d, n,
     ax.tick_params(length=10, direction='inout')
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_bbox(dict(facecolor='white', edgecolor='None', alpha=0.75))
+        
+    # Create legend
+    osc_Lsin_term = mlines.Line2D([], [], color='mediumblue', linestyle='--',
+                                  markersize=10, label=r'oscillatory $\mathcal{L}_{\sin}$-term lower bound')
+    feasible_region = mlines.Line2D([], [], color='b', marker='s', linestyle='None',
+                                    markersize=10, alpha=0.2, label='feasible subregion')
+    osc_feasible_region = mlines.Line2D([], [], color='green', marker='s', linestyle='None',
+                                        markersize=10, alpha=0.2,
+                                        label='possible oscillatory $\mathcal{L}_{\sin}$-term range')
+    level_sets = mlines.Line2D([], [], color='tab:orange', linestyle='-',
+                               markersize=10, label='level sets')
+    plt.legend(handles=[osc_Lsin_term, feasible_region, osc_feasible_region, level_sets],
+               loc='lower left', prop={'size': 10})
+    if title:
+        plt.title(title)
         
     # Save figure
     if not filedir:
