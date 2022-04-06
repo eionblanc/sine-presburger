@@ -7,9 +7,18 @@ from decision import *
 
 def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
                      vals=[], zones=[], filedir=None, filename=None, filetype=None):
+    """
+    Graph sine mesh in interval [-1, 1] up to one or two degrees of approximation,
+    alongisde the desired sine value and specified values.
+    :param deg1: int, first degree of approximation
+    :param deg2: int, second degree of approximation
+    :param vals: list of ints, particular values to plot under sine
+    :param zones: list of pairs of ints, particular intervals to plot under sine
+    """
     fig,ax = plt.subplots(figsize=(15,4))
     if not deg2:
         deg2 = deg1
+    
     for x in range(deg2+1):
         s = np.sin(x)
         if x <= deg1:
@@ -23,6 +32,7 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
             color = 'b'
             h = .8
         ax.plot((s,s), (-h,h), color)
+        
     # Shade zones
     for a,b in zones:
         if max(a,b) <= deg1:
@@ -32,6 +42,7 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
             color = 'mediumblue'
             hp = 0.165
         ax.axvspan(np.sin(a), np.sin(b)-0.006, ymin=hp, ymax=1.-hp, alpha=0.1, color=color)
+        
     # Plot particular values
     for val in vals:
         s = np.sin(val)
@@ -47,6 +58,7 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
             else:
                 ax.plot((s,s), (-0.6,0.6), 'olivedrab')
         ax.annotate(str(val), (s,h), horizontalalignment="center", verticalalignment="center")
+        
     # Manage plot
     ax.set_xlim(left=-1.,right=1.)
     ax.set_ylim(bottom=-1.2,top=1.2)
@@ -57,6 +69,7 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
     ax.tick_params(length=10, direction='inout')
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_bbox(dict(facecolor='white', edgecolor='None', alpha=0.75))
+        
     # Save figure
     if not filedir:
         filedir = './plots/'
@@ -69,6 +82,16 @@ def approximate_mesh(deg1, deg2=None, deg1_color='tab:orange', deg1_ann=True,
 
 def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
                      filedir=None, filename=None, filetype=None):
+    """
+    Graph sine meshes in interval [-1, 1] up to two degrees of approximation,
+    alongisde the desired sine difference and a difference approximate.
+    :param x1: int, first member of difference
+    :param x2: int, second member of difference
+    :param d: int, first degree of approximation
+    :param e: int, second degree of approximation
+    :param y1: int, first member of difference approximate; default to best
+    :param y2: int, second member of difference approximate; default to best
+    """
     s1 = np.sin(x1)
     s2 = np.sin(x2)
     if s1 > s2:
@@ -87,11 +110,10 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     for x in range(min(d,e)+1):
         s = np.sin(x)
         ax.plot((s,s), (-h,h), 'orange')
-    # Plot mesh up to second bound
-    h = 1.
     for x in range(min(d,e)+1,max(d,e)+1):
         s = np.sin(x)
         ax.plot((s,s), (-h,h), 'peachpuff')
+        
     # Plot y1, y2 and difference as zone
     sy1 = np.sin(y1)
     sy2 = np.sin(y2)
@@ -103,6 +125,7 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     b = max(sy1,sy2)
     hp = 0.08
     ax.axvspan(a, b, ymin=hp, ymax=1.-hp, alpha=0.1, color='b')
+    
     # Plot x1, x2, and difference as zone
     ax.plot((s1,s1), (-1.,1.), 'green')
     if min(np.abs(s1-sy1),np.abs(s1-sy2),np.abs(s2-sy1),np.abs(s2-sy2)) < 0.05:
@@ -112,8 +135,8 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     ax.annotate(str(x1), (s1,ah), horizontalalignment="right", verticalalignment="center")
     ax.plot((s2,s2), (-1.,1.), 'green')
     ax.annotate(str(x2), (s2,ah), horizontalalignment="left", verticalalignment="center")
-    hp = 0.08
     ax.axvspan(s1, s2, ymin=hp, ymax=1.-hp, alpha=0.1, color='seagreen')
+    
     # Manage plot
     ax.set_xlim(left=-1.,right=1.)
     ax.set_ylim(bottom=-1.2,top=1.2)
@@ -124,6 +147,7 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     ax.tick_params(length=10, direction='inout')
     for label in ax.get_xticklabels() + ax.get_yticklabels():
         label.set_bbox(dict(facecolor='white', edgecolor='None', alpha=0.75))
+        
     # Save figure
     if not filedir:
         filedir = './plots/'
@@ -135,7 +159,7 @@ def diff_approx_mesh(x1, x2, d, e, y1=None, y2=None,
     return
 
 def graph_level_sets(inequalities, xlim=(-10,10), ylim=(-10,10),
-                     G=3, title=None, legend_loc='upper left',
+                     title=None, legend_loc='upper left',
                      filedir=None, filename=None, filetype=None):
     """
     Graph multiple L_sin-inequalities with level sets and feasible region.
@@ -146,8 +170,8 @@ def graph_level_sets(inequalities, xlim=(-10,10), ylim=(-10,10),
     fig,ax = plt.subplots(figsize=(8,6))
     mpl.rcParams['lines.color'] = 'k'
     mpl.rcParams['axes.prop_cycle'] = mpl.cycler('color', ['k'])
-    x = np.linspace(xlim[0], xlim[1], 10**G)
-    y = np.linspace(ylim[0], ylim[1], 10**G)
+    x = np.linspace(xlim[0], xlim[1], 10**3)
+    y = np.linspace(ylim[0], ylim[1], 10**3)
     x, y = np.meshgrid(x, y)
     plt.axhline(0, alpha=0.1)
     plt.axvline(0, alpha=0.1)
@@ -213,7 +237,6 @@ def project_level_sets(inequality, divisibilities, d, n,
     # Set of level set values
     S = lincombspace(inequality['eps'], inequality['L-term'](*zero_tuple), inequality['R'], Ia)
     
-    # Create plot
     fig,ax = plt.subplots(figsize=(15,4))
     
     # Fill zones for oscillation and divisibility handling
@@ -279,3 +302,4 @@ def project_level_sets(inequality, divisibilities, d, n,
     if not filetype:
         filetype = 'pdf'
     fig.savefig(filedir + filename + '.' + filetype, bbox_inches='tight')
+    return
